@@ -6,7 +6,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,8 +27,12 @@ public class RNThreadPackage implements ReactPackage {
 
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Arrays.<NativeModule>asList(
-                new RNThreadModule(reactContext, reactNativeHost, additionalThreadPackages)
-        );
+
+        List<NativeModule> modules = new ArrayList<>();
+
+        modules.add(new RNThreadModule(reactContext, reactNativeHost, additionalThreadPackages));
+
+        return modules;
+
     }
 }

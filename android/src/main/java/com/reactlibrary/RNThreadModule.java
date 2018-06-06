@@ -122,14 +122,16 @@ public class RNThreadModule extends ReactContextBaseJavaModule implements Lifecy
 
   @Override
   public void onHostResume() {
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run() {
-        for (int threadId : threads.keySet()) {
-          threads.get(threadId).onHostResume();
-        }
-      }
-    });
+    if(needPausedWhenBackground){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+              for (int threadId : threads.keySet()) {
+                threads.get(threadId).onHostResume();
+              }
+            }
+         });
+    }
   }
 
   @Override
