@@ -32,6 +32,9 @@ import okio.Sink;
 public class RNThreadModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
   private String TAG = "ThreadManager";
+
+  private Boolean needPausedWhenBackground = true;
+
   private HashMap<Integer, JSThread> threads;
 
   private ReactApplicationContext reactApplicationContext;
@@ -55,8 +58,10 @@ public class RNThreadModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   @ReactMethod
-  public void startThread(final String jsFileName, final Promise promise) {
+  public void startThread(final String jsFileName, final Boolean pausedWhenBackground,final Promise promise) {
     Log.d(TAG, "Starting web thread - " + jsFileName);
+
+    needPausedWhenBackground = pausedWhenBackground;
 
     String jsFileSlug = jsFileName.contains("/") ? jsFileName.replaceAll("/", "_") : jsFileName;
 
@@ -129,14 +134,18 @@ public class RNThreadModule extends ReactContextBaseJavaModule implements Lifecy
 
   @Override
   public void onHostPause() {
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run() {
-        for (int threadId : threads.keySet()) {
-          threads.get(threadId).onHostPause();
-        }
-      }
-    });
+    if(needPausedWhenBackground){
+
+       new Handler(Looper.getMainLooper()).post(new Runnable() {
+          @Override
+          public void run() {
+            for (int threadId : threads.keySet()) {
+              threads.get(threadId).onHostPause();
+            }
+          }
+        });
+    }
+
   }
 
   @Override
